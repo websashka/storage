@@ -12,7 +12,7 @@ import dayjs from "dayjs";
 import {UploadFile} from "antd/es/upload/interface";
 
 
-const ton = new TonWeb(new TonWeb.HttpProvider("https://testnet.toncenter.com/api/v2/jsonRPC", { apiKey: process.env.VITE_TONCENTER_TESTNET_API_KEY}));
+const ton = new TonWeb(new TonWeb.HttpProvider("https://testnet.toncenter.com/api/v2/jsonRPC", { apiKey: import.meta.env.VITE_TONCENTER_TESTNET_API_KEY}));
 
 
 const { Link } = Typography
@@ -58,7 +58,7 @@ function App() {
           )
       )
 
-      await fetch(`${process.env.VITE_API_URL}/torrent`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/torrent`, {
         method: "POST",
         body: data,
         headers: {
