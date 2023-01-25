@@ -20,31 +20,31 @@ import Uploader from "./ui/Uploader/Uploader";
 import {OP_CODES} from "./constants";
 import dayjs from "dayjs";
 import {UploadFile} from "antd/es/upload/interface";
-//
-//
+
+
 const ton = new TonWeb(new TonWeb.HttpProvider("https://testnet.toncenter.com/api/v2/jsonRPC", { apiKey: process.env.VITE_TONCENTER_TESTNET_API_KEY}));
-//
-//
-// const { Link } = Typography
-//
-//
-// const base64ToHex = (base64: string) => bytesToHex(decodeBase64(base64));
-//
-//
-// function getBytes(file: File) {
-//   console.log(file)
-//   return new Promise<Uint8Array>((resolve, reject) => {
-//     const fr = new FileReader();
-//     fr.onerror = reject;
-//     fr.onload = () => {
-//       if(fr.result instanceof ArrayBuffer) {
-//         const bytes = new Uint8Array(fr.result)
-//         resolve(bytes);
-//       }
-//     }
-//     fr.readAsArrayBuffer(file);
-//   });
-// }
+
+
+const { Link } = Typography
+
+
+const base64ToHex = (base64: string) => bytesToHex(decodeBase64(base64));
+
+
+function getBytes(file: File) {
+  console.log(file)
+  return new Promise<Uint8Array>((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onerror = reject;
+    fr.onload = () => {
+      if(fr.result instanceof ArrayBuffer) {
+        const bytes = new Uint8Array(fr.result)
+        resolve(bytes);
+      }
+    }
+    fr.readAsArrayBuffer(file);
+  });
+}
 
 function App() {
   // const [tonConnectUI, setOptions] = useTonConnectUI();
