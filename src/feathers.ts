@@ -3,7 +3,7 @@ import authentication, {AuthenticationClient} from "@feathersjs/authentication-c
 import {feathers, FeathersService, HookContext, NextFunction, Params, ServiceInterface} from "@feathersjs/feathers";
 
 
-const client = restClient(import.meta.env.VITE_API_URL).fetch(window.fetch.bind(window))
+const client = restClient(process.env.VITE_API_URL).fetch(window.fetch.bind(window))
 interface TorrentService extends ServiceInterface {
   getFile: (data?: any, params?: Params) => Promise<string>
 }
