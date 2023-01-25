@@ -20,7 +20,12 @@ const useGetBag = (bagId: string) => {
     return await app.service("torrent").get(bagId);
   })
 }
-const FilesTable = ({ bagId }) => {
+
+interface FilesTableProps {
+  bagId: string;
+}
+
+const FilesTable = ({ bagId }: FilesTableProps) => {
   const { data, isLoading } = useGetBag(bagId);
 
   const onDownload = (filename: string) => {

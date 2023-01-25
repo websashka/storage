@@ -14,12 +14,12 @@ import {useMutation, useQuery, useQueryClient} from "react-query";
 import {Button, Form, Input, InputNumber, Layout, Space, Table, Upload, Typography, Checkbox, Switch} from "antd";
 import TonWeb from "tonweb";
 import FilesTable from "./components/FilesTable";
-import {Buffer} from "buffer";
 import TonProofService from "./services/TonProofService";
 import app from "./feathers";
 import Uploader from "./ui/Uploader/Uploader";
 import {OP_CODES} from "./constants";
 import dayjs from "dayjs";
+import {UploadFile} from "antd/es/upload/interface";
 
 
 const ton = new TonWeb(new TonWeb.HttpProvider("https://testnet.toncenter.com/api/v2/jsonRPC", { apiKey: import.meta.env.VITE_TONCENTER_TESTNET_API_KEY}));
@@ -27,46 +27,9 @@ const ton = new TonWeb(new TonWeb.HttpProvider("https://testnet.toncenter.com/ap
 
 const { Link } = Typography
 
-export const findContract = async (
-  publicKey,
-)=> {
-  for (let [version, WalletClass] of Object.entries(ALL)) {
-    const wallet = new WalletClass(ton, {
-      publicKey,
-      wc: 0,
-    });
-
-    const walletAddress = await wallet.getAddress();
-    console.log(walletAddress.toString(true, true, true))
-    const balance = await ton.getBalance(walletAddress.toString());
-    if (balance !== "0") {
-      return [version, walletAddress];
-    }
-  }
-
-  const WalletClass = ALL["v4R2"];
-  const walletContract = new WalletClass(ton, {
-    publicKey,
-    wc: 0,
-  });
-  const address = await walletContract.getAddress();
-  return address.toString(true, true, true);
-};
-
 
 const base64ToHex = (base64: string) => bytesToHex(decodeBase64(base64));
 
-const getTorrents = async () => {
-  try {
-    return await app.service("torrent").find()
-  } catch (e) {
-    console.log(e)
-  }
-}
-
-const getBag = async ({queryKey}) => {
-  return fetch(`${import.meta.env.VITE_API_URL}/api/get/${queryKey[1]}`).then(res => res.json()).then(res => res.result)
-}
 
 function getBytes(file: File) {
   console.log(file)
@@ -74,8 +37,10 @@ function getBytes(file: File) {
     const fr = new FileReader();
     fr.onerror = reject;
     fr.onload = () => {
-      const bytes = new Uint8Array(fr.result)
-      resolve(bytes);
+      if(fr.result instanceof ArrayBuffer) {
+        const bytes = new Uint8Array(fr.result)
+        resolve(bytes);
+      }
     }
     fr.readAsArrayBuffer(file);
   });
@@ -84,27 +49,14 @@ function getBytes(file: File) {
 function App() {
   const [tonConnectUI, setOptions] = useTonConnectUI();
   const wallet = useTonWallet();
-  const { data, isLoading, error, refetch } = useQuery(['torrents'], getTorrents);
+  const { data, isLoading, error, refetch } = useQuery(['torrents'], async () => await app.service("torrent").find() );
   const queryClient = useQueryClient();
-  const { mutateAsync } = useMutation<void, Error, string>(async (bagId) => {
-    await fetch(`${import.meta.env.VITE_API_URL}/api/remove/${bagId}`, {
-      method: "DELETE",
-    })
-  }, {
-    onSuccess: async (data, bagId, context) => queryClient.setQueryData("torrents",   (response: any) => {
-      const hash = Buffer.from(bagId, "hex").toString("base64")
-      return {
-        ...response,
-        torrents: response.torrents.filter((torrent) => torrent.hash !== hash)
-      }
-    })
-  });
-  const onSubmit = async ({ files }) => {
+  const onSubmit = async ({ files }: { files: any }) => {
     const data = new FormData();
 
     try {
       await Promise.all(files.fileList
-          .map(async (file) =>
+          .map(async (file: UploadFile) =>
             await getBytes(file.originFileObj as File).then(async (data) =>
               await window.openmask.provider.send("ton_encryptMessage", {
                 message: bytesToBase64(data)
