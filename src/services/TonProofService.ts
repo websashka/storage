@@ -3,7 +3,7 @@ import {Account, ConnectAdditionalRequest, TonProofItemReplySuccess} from "@tonc
 class TonProofApiService {
   private localStorageKey = 'api-access-token';
 
-  private host = 'http://localhost:3000';
+  private host = import.meta.env.VITE_API_URL;
 
   public accessToken: string | null = null;
 
