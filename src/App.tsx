@@ -12,7 +12,7 @@ import React, {useEffect, useState} from 'react'
 // import {decodeBase64, decodeUTF8} from "tweetnacl-util";
 // import {useMutation, useQuery, useQueryClient} from "react-query";
 // import {Button, Form, Input, InputNumber, Layout, Space, Table, Upload, Typography, Checkbox, Switch} from "antd";
-// import TonWeb from "tonweb";
+import TonWeb from "tonweb";
 // import FilesTable from "./components/FilesTable";
 // import TonProofService from "./services/TonProofService";
 // import app from "./feathers";
@@ -22,7 +22,7 @@ import React, {useEffect, useState} from 'react'
 // import {UploadFile} from "antd/es/upload/interface";
 //
 //
-// const ton = new TonWeb(new TonWeb.HttpProvider("https://testnet.toncenter.com/api/v2/jsonRPC", { apiKey: process.env.VITE_TONCENTER_TESTNET_API_KEY}));
+const ton = new TonWeb(new TonWeb.HttpProvider("https://testnet.toncenter.com/api/v2/jsonRPC", { apiKey: process.env.VITE_TONCENTER_TESTNET_API_KEY}));
 //
 //
 // const { Link } = Typography
