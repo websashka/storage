@@ -1,25 +1,25 @@
 import React, {useEffect, useState} from 'react'
-// import {TonConnectButton, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
-// import {
-//   base64ToBytes,
-//   deserializeBoc,
-//   bytesToHex,
-//   Slice,
-//   bytesToBase64,
-//   stringToBase64,
-//   base64toString, ALL, hexToBytes
-// } from '@openproduct/web-sdk';
-// import {decodeBase64, decodeUTF8} from "tweetnacl-util";
-// import {useMutation, useQuery, useQueryClient} from "react-query";
-// import {Button, Form, Input, InputNumber, Layout, Space, Table, Upload, Typography, Checkbox, Switch} from "antd";
+import {TonConnectButton, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
+import {
+  base64ToBytes,
+  deserializeBoc,
+  bytesToHex,
+  Slice,
+  bytesToBase64,
+  stringToBase64,
+  base64toString, ALL, hexToBytes
+} from '@openproduct/web-sdk';
+import {decodeBase64, decodeUTF8} from "tweetnacl-util";
+import {useMutation, useQuery, useQueryClient} from "react-query";
+import {Button, Form, Input, InputNumber, Layout, Space, Table, Upload, Typography, Checkbox, Switch} from "antd";
 import TonWeb from "tonweb";
-// import FilesTable from "./components/FilesTable";
-// import TonProofService from "./services/TonProofService";
-// import app from "./feathers";
-// import Uploader from "./ui/Uploader/Uploader";
-// import {OP_CODES} from "./constants";
-// import dayjs from "dayjs";
-// import {UploadFile} from "antd/es/upload/interface";
+import FilesTable from "./components/FilesTable";
+import TonProofService from "./services/TonProofService";
+import app from "./feathers";
+import Uploader from "./ui/Uploader/Uploader";
+import {OP_CODES} from "./constants";
+import dayjs from "dayjs";
+import {UploadFile} from "antd/es/upload/interface";
 //
 //
 const ton = new TonWeb(new TonWeb.HttpProvider("https://testnet.toncenter.com/api/v2/jsonRPC", { apiKey: process.env.VITE_TONCENTER_TESTNET_API_KEY}));
