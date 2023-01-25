@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     rollupOptions: {
+      external: "Buffer",
       plugins: [inject({ Buffer: ["Buffer", "Buffer"]})]
     }
   }
