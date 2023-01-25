@@ -6,6 +6,9 @@ import App from './App'
 import {QueryClient, QueryClientProvider} from "react-query";
 import TonProofService from "./services/TonProofService";
 
+import { Buffer } from 'buffer';
+window.Buffer = Buffer;
+
 const queryClient = new QueryClient()
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
