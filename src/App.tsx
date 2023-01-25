@@ -7,11 +7,13 @@ import {
   Slice,
   bytesToBase64,
   stringToBase64,
-  base64toString, ALL, hexToBytes
+  base64toString, ALL, hexToBytes,
+  Address,
+  fromNano,
+  Cell
 } from '@openproduct/web-sdk';
 import {useMutation, useQuery, useQueryClient} from "react-query";
 import {Button, Form, Input, InputNumber, Layout, Space, Table, Upload, Typography, Checkbox, Switch} from "antd";
-import TonWeb from "tonweb";
 import FilesTable from "./components/FilesTable";
 import TonProofService from "./services/TonProofService";
 import app from "./feathers";
@@ -19,9 +21,6 @@ import Uploader from "./ui/Uploader/Uploader";
 import {OP_CODES} from "./constants";
 import dayjs from "dayjs";
 import {UploadFile} from "antd/es/upload/interface";
-
-
-const ton = new TonWeb(new TonWeb.HttpProvider("https://testnet.toncenter.com/api/v2/jsonRPC", { apiKey: process.env.VITE_TONCENTER_TESTNET_API_KEY}));
 
 
 const { Link } = Typography
@@ -110,31 +109,31 @@ function App() {
 
 
   const onClose = async (address: string) => {
-    const addressContract = new TonWeb.Address(address).toString(true, true, true)
+    const addressContract = new Address(address).toString(true, true, true)
 
-    const cell = new TonWeb.boc.Cell();
+    const cell = new Cell();
     cell.bits.writeUint(OP_CODES.CLOSE_CONTRACT, 32)
     cell.bits.writeUint((new Date().getTime() / 1e3).toFixed(0), 64)
     const message = await cell.toBoc();
     const txRes = await window.openmask.provider.send("ton_sendTransaction", {
       to: addressContract,
       value: "30000000",
-      data: TonWeb.utils.bytesToBase64(message),
+      data: bytesToBase64(message),
       dataType: "boc"
     })
   };
 
   const onTopUp = async (address: string) => {
-    const addressContract = new TonWeb.Address(address).toString(true, true, true)
+    const addressContract = new Address(address).toString(true, true, true)
 
-    const cell = new TonWeb.boc.Cell();
+    const cell = new Cell();
     cell.bits.writeUint(OP_CODES.TOPUP_BALANCE, 32)
     cell.bits.writeUint((new Date().getTime() / 1e3).toFixed(0), 64)
     const message = await cell.toBoc();
     const txRes = await window.openmask.provider.send("ton_sendTransaction", {
       to: addressContract,
       value: "30000000",
-      data: TonWeb.utils.bytesToBase64(message),
+      data: bytesToBase64(message),
       dataType: "boc"
     })
   }
@@ -181,12 +180,12 @@ function App() {
             {
               title: "contract_balance",
               dataIndex: "contract_balance",
-              render: (balance) => TonWeb.utils.fromNano(balance)
+              render: (balance) => fromNano(balance)
             },
             {
               title: "client_balance",
               dataIndex: "client_balance",
-              render: (balance) => TonWeb.utils.fromNano(balance)
+              render: (balance) => fromNano(balance)
             },
             {
               title: "Action",
