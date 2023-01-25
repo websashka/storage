@@ -1,19 +1,8 @@
 import React, {useEffect, useState} from 'react'
 import {TonConnectButton, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
-import {
-  base64ToBytes,
-  deserializeBoc,
-  bytesToHex,
-  Slice,
-  bytesToBase64,
-  stringToBase64,
-  base64toString, ALL, hexToBytes,
-  Address,
-  fromNano,
-  Cell
-} from '@openproduct/web-sdk';
 import {useMutation, useQuery, useQueryClient} from "react-query";
 import {Button, Form, Input, InputNumber, Layout, Space, Table, Upload, Typography, Checkbox, Switch} from "antd";
+import TonWeb from "tonweb";
 import FilesTable from "./components/FilesTable";
 import TonProofService from "./services/TonProofService";
 import app from "./feathers";
@@ -23,10 +12,13 @@ import dayjs from "dayjs";
 import {UploadFile} from "antd/es/upload/interface";
 
 
+const ton = new TonWeb(new TonWeb.HttpProvider("https://testnet.toncenter.com/api/v2/jsonRPC", { apiKey: process.env.VITE_TONCENTER_TESTNET_API_KEY}));
+
+
 const { Link } = Typography
 
 
-const base64ToHex = (base64: string) => bytesToHex(base64ToBytes(base64));
+const base64ToHex = (base64: string) => TonWeb.utils.bytesToHex((TonWeb.utils.base64ToBytes(base64)));
 
 
 function getBytes(file: File) {
@@ -57,7 +49,7 @@ function App() {
           .map(async (file: UploadFile) =>
             await getBytes(file.originFileObj as File).then(async (data) =>
               await window.openmask.provider.send("ton_encryptMessage", {
-                message: bytesToBase64(data)
+                message: TonWeb.utils.bytesToBase64(data)
               })
             ).then((encrypted) => {
               const encryptedFile = new File([encrypted], file.name)
@@ -109,31 +101,31 @@ function App() {
 
 
   const onClose = async (address: string) => {
-    const addressContract = new Address(address).toString(true, true, true)
+    const addressContract = new TonWeb.Address(address).toString(true, true, true)
 
-    const cell = new Cell();
+    const cell = new TonWeb.boc.Cell();
     cell.bits.writeUint(OP_CODES.CLOSE_CONTRACT, 32)
     cell.bits.writeUint((new Date().getTime() / 1e3).toFixed(0), 64)
     const message = await cell.toBoc();
     const txRes = await window.openmask.provider.send("ton_sendTransaction", {
       to: addressContract,
       value: "30000000",
-      data: bytesToBase64(message),
+      data: TonWeb.utils.bytesToBase64(message),
       dataType: "boc"
     })
   };
 
   const onTopUp = async (address: string) => {
-    const addressContract = new Address(address).toString(true, true, true)
+    const addressContract = new TonWeb.Address(address).toString(true, true, true)
 
-    const cell = new Cell();
+    const cell = new TonWeb.boc.Cell();
     cell.bits.writeUint(OP_CODES.TOPUP_BALANCE, 32)
     cell.bits.writeUint((new Date().getTime() / 1e3).toFixed(0), 64)
     const message = await cell.toBoc();
     const txRes = await window.openmask.provider.send("ton_sendTransaction", {
       to: addressContract,
       value: "30000000",
-      data: bytesToBase64(message),
+      data: TonWeb.utils.bytesToBase64(message),
       dataType: "boc"
     })
   }
@@ -180,12 +172,12 @@ function App() {
             {
               title: "contract_balance",
               dataIndex: "contract_balance",
-              render: (balance) => fromNano(balance)
+              render: (balance) => TonWeb.utils.fromNano(balance)
             },
             {
               title: "client_balance",
               dataIndex: "client_balance",
-              render: (balance) => fromNano(balance)
+              render: (balance) => TonWeb.utils.fromNano(balance)
             },
             {
               title: "Action",
