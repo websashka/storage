@@ -117,6 +117,7 @@ const UploadForm = ({ className }: UploadFormProps) => {
     } catch (e) {
       console.log(e)
     }
+    setIsOpen(false)
   }
 
   return (
