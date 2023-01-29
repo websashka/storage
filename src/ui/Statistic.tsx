@@ -1,5 +1,4 @@
 import React from "react"
-import { cn } from "@/lib/utils"
 
 interface StatisticProps extends React.HTMLProps<HTMLDivElement> {
   items: { key: string | React.ReactNode; value: string | React.ReactNode }[]
@@ -7,10 +6,9 @@ interface StatisticProps extends React.HTMLProps<HTMLDivElement> {
 
 const Statistic = ({ items }: StatisticProps) => (
   <dl
-    className={cn([
-      "grid max-w-screen-xl gap-8 p-4 mx-auto text-gray-900 dark:text-white sm:p-8",
-      `grid-cols-${items.length || 4}`,
-    ])}
+    className={`grid grid-cols-${
+      items.length || 4
+    } max-w-screen-xl gap-8 p-4 mx-auto text-gray-900 dark:text-white sm:p-8`}
   >
     {items.map(({ key, value }) => (
       <div className="flex flex-col items-center justify-items-stretch">
