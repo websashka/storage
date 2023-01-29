@@ -13,7 +13,7 @@ const RequireAuth = ({ children, redirect }: RequireAuthProps) => {
     return <RequestConnectPage />
   }
 
-  return children
+  return <>{children}</>
 }
 
 export default RequireAuth

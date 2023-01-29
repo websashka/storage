@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import FilesTable from "./FilesTable"
 import dayjs from "dayjs"
 import TonWeb from "tonweb"
@@ -17,11 +17,14 @@ import prettyBytes from "pretty-bytes"
 import Loader from "@/ui/Loader"
 import CopyButton from "@/ui/CopyButton"
 
+import { ReactComponent as TonCoin } from "../assets/icons/ton-coin.svg"
 const TorrentsTable = () => {
   const { data, isLoading } = useQuery(
     ["torrents"],
     async () => await app.service("torrent").find()
   )
+
+  const [currentContext, setCurrentContext] = useState(null)
   const onClose = async (address: string) => {
     const addressContract = new TonWeb.Address(address).toString(
       true,
@@ -33,12 +36,16 @@ const TorrentsTable = () => {
     cell.bits.writeUint(OP_CODES.CLOSE_CONTRACT, 32)
     cell.bits.writeUint(Math.trunc(new Date().getTime() / 1e3), 64)
     const message = await cell.toBoc()
-    const txRes = await window.openmask.provider.send("ton_sendTransaction", {
-      to: addressContract,
-      value: "30000000",
-      data: TonWeb.utils.bytesToBase64(message),
-      dataType: "boc",
-    })
+    try {
+      await window.openmask.provider.send("ton_sendTransaction", {
+        to: addressContract,
+        value: "30000000",
+        data: TonWeb.utils.bytesToBase64(message),
+        dataType: "boc",
+      })
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   const ref = React.useRef<HTMLSpanElement>(null)
@@ -54,12 +61,16 @@ const TorrentsTable = () => {
     cell.bits.writeUint(OP_CODES.TOPUP_BALANCE, 32)
     cell.bits.writeUint(Math.trunc(new Date().getTime() / 1e3), 64)
     const message = await cell.toBoc()
-    const txRes = await window.openmask.provider.send("ton_sendTransaction", {
-      to: addressContract,
-      value: "30000000",
-      data: TonWeb.utils.bytesToBase64(message),
-      dataType: "boc",
-    })
+    try {
+      await window.openmask.provider.send("ton_sendTransaction", {
+        to: addressContract,
+        value: "30000000",
+        data: TonWeb.utils.bytesToBase64(message),
+        dataType: "boc",
+      })
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   if (isLoading) {
@@ -70,10 +81,10 @@ const TorrentsTable = () => {
     <>
       <Table
         rowKey="torrent"
-        onRow={() => ({
+        onRow={(record) => ({
           onContextMenu: (e) => {
             e.preventDefault()
-
+            setCurrentContext(record.address)
             ref.current?.dispatchEvent(
               new MouseEvent("contextmenu", {
                 bubbles: true,
@@ -105,8 +116,12 @@ const TorrentsTable = () => {
           {
             title: "Balance",
             dataIndex: "contract_balance",
-            render: (balance) =>
-              `${parseFloat(TonWeb.utils.fromNano(balance)).toFixed(2)} TON`,
+            render: (balance) => (
+              <>
+                {parseFloat(TonWeb.utils.fromNano(balance)).toFixed(2)}
+                <TonCoin className="inline" />
+              </>
+            ),
           },
           {
             title: "Size",
@@ -118,8 +133,38 @@ const TorrentsTable = () => {
       <ContextMenu>
         <ContextMenuTrigger ref={ref} />
         <ContextMenuContent>
-          <ContextMenuItem>Close</ContextMenuItem>
-          <ContextMenuItem>TopUp</ContextMenuItem>
+          <ContextMenuItem
+            onClick={() => {
+              window
+                .open(
+                  `${
+                    import.meta.env.VITE_EXPLORER_URL
+                  }/address/${currentContext}`,
+                  "_blank"
+                )
+                ?.focus()
+            }}
+          >
+            Explorer
+          </ContextMenuItem>
+          <ContextMenuItem
+            onClick={() => {
+              if (currentContext) {
+                onClose(currentContext)
+              }
+            }}
+          >
+            Close
+          </ContextMenuItem>
+          <ContextMenuItem
+            onClick={() => {
+              if (currentContext) {
+                onTopUp(currentContext)
+              }
+            }}
+          >
+            TopUp
+          </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
     </>

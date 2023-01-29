@@ -18,8 +18,11 @@ interface TorrentService extends ServiceInterface {
   getFile: (data?: any, params?: Params) => Promise<string>
 }
 
+interface ProviderService extends ServiceInterface {}
+
 const app = feathers<{
   torrent: TorrentService
+  provider: ProviderService
 }>()
 
 app.configure(client)
@@ -45,6 +48,10 @@ app.configure((app) => {
 
 app.use("torrent", client.service("torrent") as TorrentService, {
   methods: ["get", "find", "create", "getFile"],
+})
+
+app.use("provider", client.service("provider") as ProviderService, {
+  methods: ["get"],
 })
 
 export default app

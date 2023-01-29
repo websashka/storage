@@ -10,7 +10,11 @@ const router = createBrowserRouter([
   {
     errorElement: <Error500Page />,
     path: "/",
-    element: <TorrentsPage />,
+    element: (
+      <RequireAuth>
+        <TorrentsPage />
+      </RequireAuth>
+    ),
   },
   {
     path: "/features",

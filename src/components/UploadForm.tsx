@@ -15,6 +15,8 @@ import {
 import { Label } from "@/ui/Label"
 import { Input } from "@/ui/Input"
 import prettyBytes from "pretty-bytes"
+import { Controller, useForm } from "react-hook-form"
+import { DevTool } from "@hookform/devtools"
 
 function getBytes(file: File) {
   return new Promise<Uint8Array>((resolve, reject) => {
@@ -30,18 +32,25 @@ function getBytes(file: File) {
   })
 }
 
+interface UploadFormState {
+  isEncrypt: boolean
+  initialBalance: number
+}
 interface UploadFormProps extends React.HTMLProps<HTMLBaseElement> {}
 
 const UploadForm = ({ className }: UploadFormProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [files, setFiles] = useState<File[]>([])
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const data = new FormData()
 
-    const initialBalance = e.currentTarget.initialBalance.value
-    const isEncrypt =
-      e.currentTarget.isEncrypt.getAttribute("data-state") === "checked"
+  const {
+    register,
+    formState: { errors },
+    control,
+    handleSubmit,
+    reset,
+  } = useForm<UploadFormState>()
+  const onSubmit = async ({ initialBalance, isEncrypt }: UploadFormState) => {
+    const data = new FormData()
 
     if (files.length === 0) {
       throw new Error("No files")
@@ -116,6 +125,7 @@ const UploadForm = ({ className }: UploadFormProps) => {
         onBatchStart={(items) => {
           setFiles(items.map((item) => item.file))
           setIsOpen(true)
+          reset()
         }}
       >
         <Button className={className} type="button" icon={<UploadCloudIcon />}>
@@ -130,7 +140,7 @@ const UploadForm = ({ className }: UploadFormProps) => {
         }}
       >
         <DialogContent className="sm:max-w-[425px]">
-          <form onSubmit={onSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <DialogHeader>
               <DialogTitle>Create new bag</DialogTitle>
               <DialogDescription>
@@ -147,11 +157,24 @@ const UploadForm = ({ className }: UploadFormProps) => {
               </ul>
               <div className="flex items-center space-x-2">
                 <Label>Encrypt files?</Label>
-                <Switch id="isEncrypt" />
+                <Controller
+                  control={control}
+                  name="isEncrypt"
+                  render={({ field: { onChange } }) => (
+                    <Switch onCheckedChange={onChange} />
+                  )}
+                />
               </div>
-              <div className="flex items-center space-x-2">
-                <Label>Initial balance</Label>
-                <Input id="initialBalance" />
+              <div>
+                <div className="flex items-center space-x-2">
+                  <Label>Initial balance</Label>
+                  <Input
+                    {...register("initialBalance", {
+                      required: "This field is required",
+                    })}
+                  />
+                </div>
+                {errors?.initialBalance?.message}
               </div>
             </div>
             <DialogFooter>
@@ -160,6 +183,7 @@ const UploadForm = ({ className }: UploadFormProps) => {
           </form>
         </DialogContent>
       </Dialog>
+      {import.meta.env.DEV && <DevTool control={control} />}
     </>
   )
 }

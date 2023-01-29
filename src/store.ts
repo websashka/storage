@@ -1,3 +1,11 @@
 import React from "react"
+import { ProviderParams } from "@/types/Provider"
 
-export const AuthContext = React.createContext({ isAuth: false })
+interface IAuthContext {
+  isAuth: boolean
+  provider: ProviderParams | null
+}
+export const AuthContext = React.createContext<IAuthContext>({
+  isAuth: false,
+  provider: null,
+})
