@@ -1,8 +1,6 @@
 import React, { useContext } from "react"
 import { Statistic } from "@/ui/Statistic"
 import { Card } from "@/ui/Card"
-import { useQuery } from "react-query"
-import app from "@/feathers"
 import { AuthContext } from "@/store"
 import TonWeb from "tonweb"
 import { ReactComponent as TonCoin } from "../assets/icons/ton-coin.svg"
