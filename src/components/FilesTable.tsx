@@ -1,10 +1,13 @@
-import React from "react"
+import React, { useState } from "react"
 import { useQuery } from "react-query"
 import app from "../feathers"
 import { Button } from "@/ui/Button"
 import Table from "rc-table"
 import prettyBytes from "pretty-bytes"
 import Loader from "@/ui/Loader"
+import { Switch } from "@/ui/Switch"
+import { Label } from "@/ui/Label"
+import { useTonWallet } from "@tonconnect/ui-react"
 
 const downloadBase64File = (contentBase64: string, fileName: string) => {
   const linkSource = `data:application/pdf;base64,${contentBase64}`
@@ -27,10 +30,14 @@ interface FilesTableProps {
   bagId: string
 }
 
-const FilesTable = ({ bagId }: FilesTableProps) => {
-  const { data, isLoading } = useGetBag(bagId)
-
-  const onDownload = (filename: string) => {
+interface DownloadFormProps {
+  filename: string
+  bagId: string
+}
+const DownloadForm = ({ filename, bagId }: DownloadFormProps) => {
+  const [decrypt, setDecrypt] = useState(false)
+  const wallet = useTonWallet()
+  const onDownload = () => {
     app
       .service("torrent")
       .getFile(null, {
@@ -39,13 +46,31 @@ const FilesTable = ({ bagId }: FilesTableProps) => {
           filename,
         },
       })
-      .then(async (base64) => {
-        const decryptedBase64 = await window.ton.send("ton_decryptMessage", {
-          message: base64,
-        })
-        await downloadBase64File(decryptedBase64, filename)
+      .then(async (content) => {
+        let base64 = content
+        if (decrypt) {
+          base64 = await window.ton.send("ton_decryptMessage", {
+            message: content,
+          })
+        }
+        await downloadBase64File(base64, filename)
       })
   }
+
+  return (
+    <div className="flex items-center space-x-2">
+      <Label>Decrypt?</Label>
+      <Switch
+        onCheckedChange={setDecrypt}
+        disabled={wallet?.name !== "OpenMask"}
+      />
+      <Button onClick={() => onDownload()}>Download</Button>
+    </div>
+  )
+}
+
+const FilesTable = ({ bagId }: FilesTableProps) => {
+  const { data, isLoading } = useGetBag(bagId)
 
   if (isLoading) {
     return <Loader />
@@ -68,11 +93,7 @@ const FilesTable = ({ bagId }: FilesTableProps) => {
           title: "",
           dataIndex: "name",
           render: (filename) => {
-            return (
-              <>
-                <Button onClick={() => onDownload(filename)}>Download</Button>
-              </>
-            )
+            return <DownloadForm filename={filename} bagId={bagId} />
           },
         },
       ]}

@@ -59,36 +59,33 @@ const UploadForm = ({ className }: UploadFormProps) => {
     if (files.length === 0) {
       throw new Error("No files")
     }
-    if (isEncrypt) {
-      try {
-        await Promise.all(
-          files.map(
-            async (file) =>
-              await getBytes(file)
-                .then(async (data) => {
+
+    try {
+      await Promise.all(
+        files.map(
+          async (file) =>
+            await getBytes(file)
+              .then(async (data) => {
+                if (isEncrypt) {
                   return await window.openmask.provider.send(
                     "ton_encryptMessage",
                     {
                       message: TonWeb.utils.bytesToBase64(data),
                     }
                   )
-                })
-                .then((encrypted) => {
-                  const encryptedFile = new File([encrypted], file.name)
-                  data.append(file.name, encryptedFile)
-                })
-          )
+                }
+                return TonWeb.utils.bytesToBase64(data)
+              })
+              .then((encrypted) => {
+                const encryptedFile = new File([encrypted], file.name)
+                data.append(file.name, encryptedFile)
+              })
         )
-      } catch (e) {
-        console.error(e)
-      }
+      )
+    } catch (e) {
+      console.error(e)
     }
 
-    if (!isEncrypt) {
-      files.forEach((file) => {
-        data.append(file.name, file)
-      })
-    }
     try {
       await fetch(
         `${import.meta.env.VITE_API_URL}/torrent?providerAddress=${
