@@ -41,7 +41,8 @@ const TorrentsTable = () => {
     const message = await cell.toBoc()
     try {
       await tonConnectUI.sendTransaction({
-        validUntil: Date.now() + 1000000,
+        validUntil:
+          Date.now() + import.meta.env.VITE_APPROVE_TIME || 5 * 60 * 1000,
         messages: [
           {
             address: addressContract,
@@ -63,18 +64,13 @@ const TorrentsTable = () => {
       true,
       true
     )
-
-    const cell = new TonWeb.boc.Cell()
-    cell.bits.writeUint(OP_CODES.TOPUP_BALANCE, 32)
-    cell.bits.writeUint(Math.trunc(new Date().getTime() / 1e3), 64)
-    const message = await cell.toBoc()
     try {
       await tonConnectUI.sendTransaction({
-        validUntil: Date.now() + 1000000,
+        validUntil:
+          Date.now() + import.meta.env.VITE_APPROVE_TIME || 5 * 60 * 1000,
         messages: [
           {
             address: addressContract,
-            payload: TonWeb.utils.bytesToBase64(message),
             amount: "30000000",
           },
         ],
@@ -126,7 +122,7 @@ const TorrentsTable = () => {
           },
           {
             title: "Balance",
-            dataIndex: "contract_balance",
+            dataIndex: "client_balance",
             render: (balance) => (
               <>
                 {parseFloat(TonWeb.utils.fromNano(balance)).toFixed(2)}
