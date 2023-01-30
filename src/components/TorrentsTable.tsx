@@ -18,11 +18,14 @@ import Loader from "@/ui/Loader"
 import CopyButton from "@/ui/CopyButton"
 
 import { ReactComponent as TonCoin } from "../assets/icons/ton-coin.svg"
+import { useTonConnectUI } from "@tonconnect/ui-react"
 const TorrentsTable = () => {
   const { data, isLoading } = useQuery(
     ["torrents"],
     async () => await app.service("torrent").find()
   )
+
+  const [tonConnectUI] = useTonConnectUI()
 
   const [currentContext, setCurrentContext] = useState(null)
   const onClose = async (address: string) => {
@@ -37,11 +40,15 @@ const TorrentsTable = () => {
     cell.bits.writeUint(Math.trunc(new Date().getTime() / 1e3), 64)
     const message = await cell.toBoc()
     try {
-      await window.openmask.provider.send("ton_sendTransaction", {
-        to: addressContract,
-        value: "30000000",
-        data: TonWeb.utils.bytesToBase64(message),
-        dataType: "boc",
+      await tonConnectUI.sendTransaction({
+        validUntil: Date.now() + 1000000,
+        messages: [
+          {
+            address: addressContract,
+            payload: TonWeb.utils.bytesToBase64(message),
+            amount: "30000000",
+          },
+        ],
       })
     } catch (e) {
       console.error(e)
@@ -62,11 +69,15 @@ const TorrentsTable = () => {
     cell.bits.writeUint(Math.trunc(new Date().getTime() / 1e3), 64)
     const message = await cell.toBoc()
     try {
-      await window.openmask.provider.send("ton_sendTransaction", {
-        to: addressContract,
-        value: "30000000",
-        data: TonWeb.utils.bytesToBase64(message),
-        dataType: "boc",
+      await tonConnectUI.sendTransaction({
+        validUntil: Date.now() + 1000000,
+        messages: [
+          {
+            address: addressContract,
+            payload: TonWeb.utils.bytesToBase64(message),
+            amount: "30000000",
+          },
+        ],
       })
     } catch (e) {
       console.error(e)

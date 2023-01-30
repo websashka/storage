@@ -25,7 +25,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <TonConnectUIProvider
       getConnectParameters={() => TonProofService.connectWalletRequest}
       walletsListSource="https://raw.githubusercontent.com/ton-connect/wallets-list/main/wallets.json"
-      manifestUrl="https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json"
+      manifestUrl={import.meta.env.VITE_MANIFEST_URL}
     >
       <QueryClientProvider client={queryClient}>
         <AuthProvider>

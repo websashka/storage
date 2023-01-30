@@ -17,6 +17,7 @@ import { Input } from "@/ui/Input"
 import prettyBytes from "pretty-bytes"
 import { Controller, useForm } from "react-hook-form"
 import { DevTool } from "@hookform/devtools"
+import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react"
 
 function getBytes(file: File) {
   return new Promise<Uint8Array>((resolve, reject) => {
@@ -41,6 +42,9 @@ interface UploadFormProps extends React.HTMLProps<HTMLBaseElement> {}
 const UploadForm = ({ className }: UploadFormProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [files, setFiles] = useState<File[]>([])
+
+  const [tonConnectUI] = useTonConnectUI()
+  const wallet = useTonWallet()
 
   const {
     register,
@@ -103,16 +107,16 @@ const UploadForm = ({ className }: UploadFormProps) => {
         .then((res) => res.json())
         .then(async (res) => {
           const initMessage = res.result.payload
-          const txRes = await window.openmask.provider.send(
-            "ton_sendTransaction",
-            {
-              to: import.meta.env.VITE_PROVIDER_ADDRESS,
-              value: TonWeb.utils.toNano(initialBalance).toString(),
-              data: initMessage,
-              dataType: "boc",
-            }
-          )
-          console.log(txRes)
+          await tonConnectUI.sendTransaction({
+            validUntil: Date.now() + 1000000,
+            messages: [
+              {
+                address: import.meta.env.VITE_PROVIDER_ADDRESS,
+                payload: initMessage,
+                amount: TonWeb.utils.toNano(initialBalance).toString(),
+              },
+            ],
+          })
         })
     } catch (e) {
       console.log(e)
@@ -162,7 +166,10 @@ const UploadForm = ({ className }: UploadFormProps) => {
                   control={control}
                   name="isEncrypt"
                   render={({ field: { onChange } }) => (
-                    <Switch onCheckedChange={onChange} />
+                    <Switch
+                      onCheckedChange={onChange}
+                      disabled={wallet?.name !== "OpenMask"}
+                    />
                   )}
                 />
               </div>
