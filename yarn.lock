@@ -1264,20 +1264,20 @@
     node-fetch "^2.6.7"
     tweetnacl "^1.0.3"
 
-"@tonconnect/ui-react@^0.0.13":
-  version "0.0.13"
-  resolved "https://registry.yarnpkg.com/@tonconnect/ui-react/-/ui-react-0.0.13.tgz#3d1abd88e12b0bdd8eaff31ce2a84859bce129e5"
-  integrity sha512-xiHX/m+xryxfJjX8bKuazHlP4QrwmJImjQwosDs98+wpZUaiFijmKkgIfEbm8VGQ1chl2rpAGdPrVZSsg6uyjA==
+"@tonconnect/ui-react@^0.0.14":
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/@tonconnect/ui-react/-/ui-react-0.0.14.tgz#b462762b121c550cb5ad7ac281d8bd94aa207901"
+  integrity sha512-tmPS6ZEDUlUCoQNiypm7ekbgWGr+fxSifJGxzQy1m0jrNXt+a1HHX/ntDuS2i/B/YYYiBqAFC42mPzEpc0DtkA==
   dependencies:
     "@tonconnect/sdk" "^2.0.7"
-    "@tonconnect/ui" "^0.0.16"
+    "@tonconnect/ui" "^0.0.17"
     react "^18.0.0"
     react-dom "^18.0.0"
 
-"@tonconnect/ui@^0.0.16":
-  version "0.0.16"
-  resolved "https://registry.yarnpkg.com/@tonconnect/ui/-/ui-0.0.16.tgz#33fc0aa52f157668c378ed089a8d1047ead4ef00"
-  integrity sha512-rqaLEOmBsOa8ctxiBrGuiRPlxWMYlIQTegq6BK4iTWHpJhL3zfPumqFPlOCGiX7sXdmZ4MGL2D2/kOH5Q9HfiA==
+"@tonconnect/ui@^0.0.17":
+  version "0.0.17"
+  resolved "https://registry.yarnpkg.com/@tonconnect/ui/-/ui-0.0.17.tgz#5729243e8fdaaa204ee4bbb6be710d4a0dd2dfc0"
+  integrity sha512-uKHpQPzE4BYG65nuzA/DTrGgVkBnaKGWzmT4WcJ2yJ+OJ/MJH2sCv17vNDIiDW62PL+MG790KX0MUNcDT2ojEQ==
   dependencies:
     "@floating-ui/dom" "^1.0.12"
     "@solid-primitives/i18n" "^1.1.2"
