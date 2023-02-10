@@ -106,7 +106,8 @@ const UploadForm = ({ className }: UploadFormProps) => {
           const initMessage = res.result.payload
           await tonConnectUI.sendTransaction({
             validUntil:
-              Date.now() + import.meta.env.VITE_APPROVE_TIME || 5 * 60 * 1000,
+              Date.now() + parseInt(import.meta.env.VITE_APPROVE_TIME) ||
+              5 * 60 * 1000,
             messages: [
               {
                 address: import.meta.env.VITE_PROVIDER_ADDRESS,

@@ -42,7 +42,8 @@ const TorrentsTable = () => {
     try {
       await tonConnectUI.sendTransaction({
         validUntil:
-          Date.now() + import.meta.env.VITE_APPROVE_TIME || 5 * 60 * 1000,
+          Date.now() + parseInt(import.meta.env.VITE_APPROVE_TIME) ||
+          5 * 60 * 1000,
         messages: [
           {
             address: addressContract,
@@ -67,7 +68,8 @@ const TorrentsTable = () => {
     try {
       await tonConnectUI.sendTransaction({
         validUntil:
-          Date.now() + import.meta.env.VITE_APPROVE_TIME || 5 * 60 * 1000,
+          Date.now() + parseInt(import.meta.env.VITE_APPROVE_TIME) ||
+          5 * 60 * 1000,
         messages: [
           {
             address: addressContract,
