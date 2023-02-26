@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react"
-import { ReactComponent as ArrowIcon } from "shared/assets/icons/arrow.svg"
-import { UserContext } from "../../entities/User"
+import { ArrowIcon } from "shared/assets/icons"
+import { UserContext } from "entities/User"
 import { useNavigate } from "react-router-dom"
 
 export const RequestConnectPage = () => {
@@ -15,11 +15,13 @@ export const RequestConnectPage = () => {
 
   return (
     <section>
-      <div className="flex flex-col absolute">
-        <ArrowIcon className="self-end" />
-        <p className="mb-4 text-3xl tracking-tight font-bold text-gray-900">
-          Please, connect your wallet
-        </p>
+      <div className="flex flex-col items-end">
+        <div>
+          <ArrowIcon/>
+          <p className="mb-4 text-3xl tracking-tight font-bold text-gray-900">
+            Please, connect your wallet
+          </p>
+        </div>
       </div>
     </section>
   )
