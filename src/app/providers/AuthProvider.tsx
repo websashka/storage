@@ -100,6 +100,19 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     return tonConnectUI.onStatusChange(onWalletStatusChange)
   }, [onWalletStatusChange])
 
+  const logoutWallet = useCallback(async () => {
+    if (tonConnectUI.connected) {
+      await tonConnectUI.disconnect()
+    }
+  }, [tonConnectUI.connected])
+
+  useEffect(() => {
+    app.on("AuthError", logoutWallet)
+    return () => {
+      app.off("AuthError", logoutWallet)
+    }
+  }, [logoutWallet])
+
   return (
     <UserContext.Provider value={{ isAuth, walletIsReady }}>
       <ProviderContext.Provider value={{ provider }}>
