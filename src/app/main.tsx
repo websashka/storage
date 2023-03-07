@@ -5,11 +5,11 @@ import React from "react"
 import ReactDOM from "react-dom/client"
 
 import { QueryClient, QueryClientProvider } from "react-query"
-import TonProofService from "./providers/TonProofService"
 
 import "./index.css"
 import { RouterProvider } from "react-router-dom"
 import { router } from "../pages"
+import app from "./feathers"
 
 const queryClient = new QueryClient()
 
@@ -20,10 +20,15 @@ Sentry.init({
   tracesSampleRate: 1.0,
 })
 
+const generatePayload = async () => {
+  const { payload } = await app.service("tonProof").generatePayload()
+  return { tonProof: payload }
+}
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <TonConnectUIProvider
-      getConnectParameters={() => TonProofService.connectWalletRequest}
+      getConnectParameters={generatePayload}
       walletsListSource="https://raw.githubusercontent.com/ton-connect/wallets-list/main/wallets.json"
       manifestUrl={import.meta.env.VITE_MANIFEST_URL}
     >

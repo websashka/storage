@@ -4,8 +4,6 @@ import { useQuery } from "react-query"
 import { ProviderContext } from "entities/Provider"
 import { UserContext } from "entities/User"
 import app from "../feathers"
-import TonProofService from "./TonProofService"
-import { useLocation, useNavigate } from "react-router-dom"
 
 export interface QueryResponse<R> {
   ok: boolean
@@ -28,8 +26,6 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const [tonConnectUI] = useTonConnectUI()
   const [isAuth, setIsAuth] = useState(false)
   const [walletIsReady, setWalletIsReady] = useState(false)
-  const navigate = useNavigate()
-  const location = useLocation()
 
   const { data: providerResponse } = useQuery<ProviderParamsResponse>(
     [],
@@ -64,8 +60,9 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const onWalletStatusChange = useCallback(
     async (wallet: ConnectedWallet | null) => {
       if (!wallet) {
-        setIsAuth(false)
-        TonProofService.reset()
+        app.logout().then(() => {
+          setIsAuth(false)
+        })
         return
       }
 
@@ -73,19 +70,27 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         wallet.connectItems?.tonProof &&
         "proof" in wallet.connectItems.tonProof
       ) {
-        await TonProofService.checkProof(
-          wallet.connectItems.tonProof.proof,
-          wallet.account
-        )
+        const proof = wallet.connectItems.tonProof.proof
+        const account = wallet.account
+
+        await app.authenticate({
+          strategy: "tonProof",
+          address: account.address,
+          network: account.chain,
+          proof,
+        })
       }
 
-      if (!TonProofService.accessToken) {
+      const accessToken = await app.authentication.getAccessToken()
+      if (!accessToken) {
         setIsAuth(false)
         await tonConnectUI.disconnect()
         return
       }
-      if (wallet && !isAuth && walletIsReady) {
-        setIsAuth(true)
+      if (wallet && !isAuth) {
+        app.reAuthenticate().then(() => {
+          setIsAuth(true)
+        })
       }
     },
     [walletIsReady, isAuth]

@@ -1,19 +1,15 @@
-import authentication, {
-  AuthenticationClient,
-} from "@feathersjs/authentication-client"
-import {
-  feathers,
-  FeathersService,
-  HookContext,
-  NextFunction,
-  Params,
-  ServiceInterface,
-} from "@feathersjs/feathers"
+import authentication from "@feathersjs/authentication-client"
+import { feathers, Params, ServiceInterface } from "@feathersjs/feathers"
 import restClient from "@feathersjs/rest-client"
 
 const client = restClient(import.meta.env.VITE_API_URL).fetch(
   window.fetch.bind(window)
 )
+
+const authClient = restClient(`${import.meta.env.VITE_API_URL}/auth`).fetch(
+  window.fetch.bind(window)
+)
+
 interface TorrentService extends ServiceInterface {
   getFile: (data?: any, params?: Params) => Promise<string>
 }
@@ -23,31 +19,29 @@ interface ProviderService extends ServiceInterface {}
 const app = feathers<{
   torrent: TorrentService
   provider: ProviderService
+  tonProof: any
+  auth: any
 }>()
 
 app.configure(client)
 
-const setHeader = () => {
-  return (context: HookContext, next: NextFunction) => {
-    context.params.headers = Object.assign(
-      {},
-      {
-        ["Authentication"]: `Bearer ${localStorage.getItem(
-          "api-access-token"
-        )}`,
-      },
-      context.params.headers
-    )
+app.use("auth", authClient.service("authentication"))
 
-    return next()
-  }
-}
-app.configure((app) => {
-  app.hooks([setHeader()])
-})
+app.configure(
+  authentication({
+    path: "auth",
+    storage: window.localStorage,
+  })
+)
 
 app.use("torrent", client.service("torrent") as TorrentService, {
   methods: ["get", "find", "create", "getFile"],
+})
+
+app.configure((app) => {
+  app.use("tonProof", authClient.service("tonProof"), {
+    methods: ["generatePayload"],
+  })
 })
 
 app.use("provider", client.service("provider") as ProviderService, {

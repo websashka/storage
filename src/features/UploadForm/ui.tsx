@@ -18,6 +18,7 @@ import {
   Label,
   Input,
 } from "shared/ui"
+import app from "../../app/feathers"
 
 function getBytes(file: File) {
   return new Promise<Uint8Array>((resolve, reject) => {
@@ -87,6 +88,7 @@ export const UploadForm = ({ className }: UploadFormProps) => {
     }
 
     try {
+      const token = await app.authentication.getAccessToken()
       await fetch(
         `${import.meta.env.VITE_API_URL}/torrent?providerAddress=${
           import.meta.env.VITE_PROVIDER_ADDRESS
@@ -95,9 +97,7 @@ export const UploadForm = ({ className }: UploadFormProps) => {
           method: "POST",
           body: data,
           headers: {
-            ["Authentication"]: `Bearer ${localStorage.getItem(
-              "api-access-token"
-            )}`,
+            ["Authorization"]: `Bearer ${token}`,
           },
         }
       )
@@ -147,14 +147,11 @@ export const UploadForm = ({ className }: UploadFormProps) => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <DialogHeader>
               <DialogTitle>Create new bag</DialogTitle>
-              <DialogDescription>
-                Make changes to your profile here. Click save when you're done.
-              </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <ul>
                 {files.map((file) => (
-                  <li>
+                  <li key={file.name}>
                     {file.name} ({prettyBytes(file.size)})
                   </li>
                 ))}
