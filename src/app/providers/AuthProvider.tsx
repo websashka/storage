@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useQuery } from "react-query"
 import { ProviderContext } from "entities/Provider"
 import { UserContext } from "entities/User"
-import app from "../feathers"
+import app from "../../shared/lib/feathers"
 
 export interface QueryResponse<R> {
   ok: boolean

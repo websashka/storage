@@ -1,0 +1,5 @@
+export { ReactComponent as ArrowIcon } from "./arrow.svg"
+export { ReactComponent as TonCoinIcon } from "./ton-coin.svg"
+export { ReactComponent as GithubIcon } from "./github.svg"
+export { ReactComponent as TelegramIcon } from "./telegram.svg"
+export { ReactComponent as BoxIcon } from "./box.svg"

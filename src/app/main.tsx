@@ -9,7 +9,7 @@ import { QueryClient, QueryClientProvider } from "react-query"
 import "./index.css"
 import { RouterProvider } from "react-router-dom"
 import { router } from "../pages"
-import app from "./feathers"
+import app from "../shared/lib/feathers"
 
 const queryClient = new QueryClient()
 

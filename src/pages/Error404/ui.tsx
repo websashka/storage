@@ -1,16 +1,17 @@
 import React from "react"
-import { ReactComponent as Icon404 } from "shared/assets/images/404-computer.svg"
+import { Icon404 } from "shared/_assets"
+
 export const Error404Page = () => (
   <section className="bg-white dark:bg-gray-900">
     <div className="py-8 px-4 mx-auto max-w-screen-xl lg:px-6">
       <div className="mx-auto max-w-screen-sm text-center">
         <Icon404 className="mx-auto" />
         <p className="mb-4 text-3xl tracking-tight font-bold text-gray-900 md:text-4xl dark:text-white">
-          Something's missing.
+          Something&apos;s missing.
         </p>
         <p className="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">
-          Sorry, we can't find that page. You'll find lots to explore on the
-          home page.{" "}
+          Sorry, we can&apos;t find that page. You&apos;ll find lots to explore
+          on the home page.{" "}
         </p>
         <a
           href="src/pages#"

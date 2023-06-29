@@ -73,8 +73,9 @@ const ContextMenuItem = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Item> & {
     inset?: boolean
+    icon: React.ReactNode
   }
->(({ className, inset, ...props }, ref) => (
+>(({ className, inset, icon, children, ...props }, ref) => (
   <ContextMenuPrimitive.Item
     ref={ref}
     className={cn(
@@ -83,7 +84,10 @@ const ContextMenuItem = React.forwardRef<
       className
     )}
     {...props}
-  />
+  >
+    <div className="mr-2">{icon}</div>
+    {children}
+  </ContextMenuPrimitive.Item>
 ))
 ContextMenuItem.displayName = ContextMenuPrimitive.Item.displayName
 

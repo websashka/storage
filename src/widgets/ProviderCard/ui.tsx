@@ -6,7 +6,7 @@ import prettyBytes from "pretty-bytes"
 import React, { useContext } from "react"
 import TonWeb from "tonweb"
 import { ProviderContext } from "entities/Provider"
-import { ReactComponent as TonCoin } from "shared/assets/icons/ton-coin.svg"
+import { TonCoinIcon } from "shared/_assets"
 import { Card, Statistic } from "shared/ui"
 dayjs.extend(duration)
 dayjs.extend(relativeTime)
@@ -29,7 +29,7 @@ export const ProviderCard = ({
             value: (
               <>
                 {TonWeb.utils.fromNano(new BN(provider.rate))}
-                <TonCoin className="inline" />
+                <TonCoinIcon className="inline" />
               </>
             ),
           },

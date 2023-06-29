@@ -4,13 +4,14 @@ import authentication, {
 import { FeathersError } from "@feathersjs/errors"
 import { feathers, Params, ServiceInterface } from "@feathersjs/feathers"
 import restClient from "@feathersjs/rest-client"
+
 const client = restClient(import.meta.env.VITE_API_URL).fetch(
   window.fetch.bind(window)
 )
 
-const authClient = restClient(`${import.meta.env.VITE_API_URL}/auth`).fetch(
-  window.fetch.bind(window)
-)
+const authClient = restClient(
+  import.meta.env.VITE_AUTH_URL || `${import.meta.env.VITE_API_URL}/auth`
+).fetch(window.fetch.bind(window))
 
 interface TorrentService extends ServiceInterface {
   getFile: (data?: any, params?: Params) => Promise<string>
@@ -22,6 +23,7 @@ const app = feathers<{
   torrent: TorrentService
   provider: ProviderService
   tonProof: any
+  providers: ServiceInterface
   auth: any
 }>()
 
@@ -60,4 +62,4 @@ app.use("provider", client.service("provider") as ProviderService, {
   methods: ["get"],
 })
 
-export default app
+export { app }

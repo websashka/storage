@@ -1,5 +1,5 @@
 import React from "react"
-import { ReactComponent as Icon500 } from "shared/assets/images/500.svg"
+import { Icon500 } from "shared/_assets"
 export const Error500Page = () => (
   <section className="bg-white dark:bg-gray-900">
     <div className="py-8 px-4 mx-auto max-w-screen-xl lg:px-6">

@@ -1,6 +1,5 @@
 import React from "react"
-import { ReactComponent as GithubIcon } from "shared/assets/icons/github.svg"
-import { ReactComponent as TelegramIcon } from "shared/assets/icons/telegram.svg"
+import { GithubIcon, TelegramIcon } from "shared/_assets"
 import { Footer } from "shared/ui"
 
 export const AppFooter = () => (

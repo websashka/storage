@@ -76,3 +76,5 @@ export { Switch } from "./Switch"
 export { Statistic } from "./Statistic"
 
 export type { StatisticProps } from "./Statistic"
+
+export * from "./RadioGroup"

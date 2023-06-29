@@ -4,7 +4,7 @@ import Table from "rc-table"
 import React, { useState } from "react"
 import { useQuery } from "react-query"
 
-import app from "app/feathers"
+import { app } from "shared/lib"
 import { Button, Label, Loader, Switch } from "shared/ui"
 
 const downloadBase64File = (contentBase64: string, fileName: string) => {

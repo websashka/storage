@@ -1,5 +1,5 @@
 import React from "react"
-import { ReactComponent as BoxIcon } from "../assets/icons/box.svg"
+import { BoxIcon } from "shared/_assets"
 
 export interface HeaderProps extends React.HTMLProps<HTMLBaseElement> {
   alert?: React.ReactNode

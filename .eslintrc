@@ -29,6 +29,8 @@
     "no-unused-vars": "warn",
     "fsd-import/fsd-relative-path": "error",
     "fsd-import/public-api-imports": "error",
-    "fsd-import/layer-imports": "error"
+    "fsd-import/layer-imports": "error",
+    "react/prop-types": "off",
+    "boundaries/element-types": "warn"
   }
 }

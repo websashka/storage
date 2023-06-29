@@ -18,7 +18,7 @@ import {
   Label,
   Input,
 } from "shared/ui"
-import app from "../../app/feathers"
+import app from "../../shared/lib/feathers"
 
 function getBytes(file: File) {
   return new Promise<Uint8Array>((resolve, reject) => {
@@ -143,7 +143,7 @@ export const UploadForm = ({ className }: UploadFormProps) => {
           setFiles([])
         }}
       >
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <DialogHeader>
               <DialogTitle>Create new bag</DialogTitle>

@@ -1,17 +1,23 @@
-import { useTonConnectUI } from "@tonconnect/ui-react"
+import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react"
 import dayjs from "dayjs"
+import {
+  Boxes,
+  Globe2,
+  MoreHorizontal,
+  XOctagonIcon,
+  TrendingUp,
+} from "lucide-react"
 import prettyBytes from "pretty-bytes"
 import Table from "rc-table"
 import React, { useState } from "react"
-import { useQuery } from "react-query"
 import TonWeb from "tonweb"
 
-import app from "app/feathers"
-import { FilesTable } from "widgets/FilesTable"
-import { ReactComponent as TonCoin } from "shared/assets/icons/ton-coin.svg"
-import { OP_CODES } from "shared/constants"
-import { base64ToHex } from "shared/lib"
+import { Replication } from "features/Replication"
+import { Torrent, useTorrents } from "entities/Torrent"
+import { TonCoinIcon } from "shared/_assets"
+import { base64ToHex, OP_CODES } from "shared/lib"
 import {
+  Button,
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
@@ -19,15 +25,24 @@ import {
   CopyButton,
   Loader,
 } from "shared/ui"
+import { FilesTable } from "./FilesTable"
+
+enum CONTRACT_STATUSES {
+  deployed = "deployed",
+  confirmed = "confirmed",
+  terminated = "terminated",
+  closed = "closed",
+}
+
 export const TorrentsTable = () => {
-  const { data, isLoading } = useQuery(
-    ["torrents"],
-    async () => await app.service("torrent").find()
-  )
+  const wallet = useTonWallet()
+  const { data, isLoading } = useTorrents(wallet?.account.address)
+
+  const [replicationModalOpen, setReplicationModalOpen] = useState(false)
 
   const [tonConnectUI] = useTonConnectUI()
 
-  const [currentContext, setCurrentContext] = useState(null)
+  const [currentContext, setCurrentContext] = useState<string | null>(null)
   const onClose = async (address: string) => {
     const addressContract = new TonWeb.Address(address).toString(
       true,
@@ -88,7 +103,13 @@ export const TorrentsTable = () => {
 
   return (
     <>
-      <Table
+      <Replication
+        open={replicationModalOpen}
+        onOpenChange={(open) => {
+          setReplicationModalOpen(open)
+        }}
+      />
+      <Table<Torrent>
         rowKey="torrent"
         onRow={(record) => ({
           onContextMenu: (e) => {
@@ -108,40 +129,87 @@ export const TorrentsTable = () => {
             <FilesTable bagId={base64ToHex(record.torrent)} />
           ),
         }}
-        data={data?.torrents}
+        data={data?.contracts?.filter((contract: any) =>
+          [CONTRACT_STATUSES.deployed, CONTRACT_STATUSES.confirmed].includes(
+            contract.status
+          )
+        )}
         columns={[
           {
             title: "Bag ID",
-            dataIndex: "torrent",
-            render: (torrent) => (
-              <CopyButton text={base64ToHex(torrent).toUpperCase()} />
-            ),
+            dataIndex: "torrent_hash",
+            render: (torrent) => <CopyButton text={torrent?.toUpperCase()} />,
           },
           {
-            title: "Created date",
-            dataIndex: "created_time",
+            title: "Status",
+            dataIndex: "status",
+          },
+          {
+            title: "Last proof",
+            dataIndex: "last_proof_time",
             render: (time) => dayjs.unix(time).format("DD/MM/YYYY HH:mm"),
           },
           {
             title: "Balance",
-            dataIndex: "client_balance",
-            render: (balance) => (
-              <>
-                {parseFloat(TonWeb.utils.fromNano(balance)).toFixed(2)}
-                <TonCoin className="inline" />
-              </>
-            ),
+            dataIndex: "balance",
+            render: (balance) => {
+              console.log(balance)
+              return (
+                <>
+                  {parseFloat(TonWeb.utils.fromNano(balance)).toFixed(2)}
+                  <TonCoinIcon className="inline" />
+                </>
+              )
+            },
           },
           {
             title: "Size",
             dataIndex: "file_size",
             render: (size) => prettyBytes(parseInt(size)),
           },
+          {
+            title: "",
+            dataIndex: "",
+            render: () => (
+              <Button
+                variant="ghost"
+                onClick={(e) => {
+                  const { x, bottom } = e.currentTarget.getBoundingClientRect()
+                  ref.current?.dispatchEvent(
+                    new MouseEvent("contextmenu", {
+                      bubbles: true,
+                      clientX: x,
+                      clientY: bottom,
+                    })
+                  )
+                }}
+                icon={<MoreHorizontal size={15} />}
+              />
+            ),
+          },
         ]}
       />
       <ContextMenu>
         <ContextMenuTrigger ref={ref} />
         <ContextMenuContent>
+          <ContextMenuItem
+            onClick={() => {
+              if (currentContext) {
+                onTopUp(currentContext)
+              }
+            }}
+            icon={<TrendingUp size={15} />}
+          >
+            TopUp
+          </ContextMenuItem>
+          <ContextMenuItem
+            onClick={() => {
+              setReplicationModalOpen(true)
+            }}
+            icon={<Boxes size={15} />}
+          >
+            Replication
+          </ContextMenuItem>
           <ContextMenuItem
             onClick={() => {
               window
@@ -153,6 +221,7 @@ export const TorrentsTable = () => {
                 )
                 ?.focus()
             }}
+            icon={<Globe2 size={15} />}
           >
             Explorer
           </ContextMenuItem>
@@ -162,17 +231,9 @@ export const TorrentsTable = () => {
                 onClose(currentContext)
               }
             }}
+            icon={<XOctagonIcon size={15} />}
           >
             Close
-          </ContextMenuItem>
-          <ContextMenuItem
-            onClick={() => {
-              if (currentContext) {
-                onTopUp(currentContext)
-              }
-            }}
-          >
-            TopUp
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>

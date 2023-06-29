@@ -1,6 +1,7 @@
 import React from "react"
 import { ProviderCard } from "widgets/ProviderCard"
 import { TorrentsTable } from "widgets/TorrentsTable"
+import { Replication } from "features/Replication"
 import { UploadForm } from "features/UploadForm"
 
 export const TorrentsPage = () => (
@@ -14,5 +15,11 @@ export const TorrentsPage = () => (
 
     <UploadForm className="my-4" />
     <TorrentsTable />
+    <Replication
+      open={false}
+      onOpenChange={() => {
+        console.log(1)
+      }}
+    />
   </>
 )
